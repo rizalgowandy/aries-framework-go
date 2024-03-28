@@ -20,12 +20,15 @@ import (
 	jsonld "github.com/piprate/json-gold/ld"
 
 	"github.com/hyperledger/aries-framework-go/component/kmscrypto/doc/jose"
+	"github.com/hyperledger/aries-framework-go/spi/kms"
+	"github.com/hyperledger/aries-framework-go/spi/vdr"
+
+	"github.com/hyperledger/aries-framework-go/component/models/dataintegrity"
 	"github.com/hyperledger/aries-framework-go/component/models/did"
+	"github.com/hyperledger/aries-framework-go/component/models/sdjwt/common"
 	"github.com/hyperledger/aries-framework-go/component/models/sdjwt/holder"
 	"github.com/hyperledger/aries-framework-go/component/models/signature/verifier"
 	"github.com/hyperledger/aries-framework-go/component/models/verifiable"
-	"github.com/hyperledger/aries-framework-go/spi/kms"
-	"github.com/hyperledger/aries-framework-go/spi/vdr"
 )
 
 // DefaultSchemaTemplate describes default schema.
@@ -123,6 +126,20 @@ func WithJSONLDValidation() CredentialOpt {
 // in the document. No extra fields are allowed (outside of credentialSubject).
 func WithBaseContextValidation() CredentialOpt {
 	return verifiable.WithBaseContextValidation()
+}
+
+// WithDataIntegrityVerifier provides the Data Integrity verifier to use when
+// the credential being processed has a Data Integrity proof.
+func WithDataIntegrityVerifier(v *dataintegrity.Verifier) CredentialOpt {
+	return verifiable.WithDataIntegrityVerifier(v)
+}
+
+// WithExpectedDataIntegrityFields validates that a Data Integrity proof has the
+// given purpose, domain, and challenge. Empty purpose means the default,
+// assertionMethod, will be expected. Empty domain and challenge will mean they
+// are not checked.
+func WithExpectedDataIntegrityFields(purpose, domain, challenge string) CredentialOpt {
+	return verifiable.WithExpectedDataIntegrityFields(purpose, domain, challenge)
 }
 
 // WithBaseContextExtendedValidation validates that fields that are specified in base context are as specified.
@@ -329,12 +346,39 @@ func DisclosureSigner(signer jose.Signer, signingKeyID string) MarshalDisclosure
 	return verifiable.DisclosureSigner(signer, signingKeyID)
 }
 
+// MarshalWithSDJWTVersion sets version for SD-JWT VC.
+func MarshalWithSDJWTVersion(version common.SDJWTVersion) MarshalDisclosureOption {
+	return verifiable.MarshalWithSDJWTVersion(version)
+}
+
 // MakeSDJWTOption provides an option for creating an SD-JWT from a VC.
 type MakeSDJWTOption = verifiable.MakeSDJWTOption
 
 // MakeSDJWTWithHash sets the hash to use for an SD-JWT VC.
 func MakeSDJWTWithHash(hash crypto.Hash) MakeSDJWTOption {
 	return verifiable.MakeSDJWTWithHash(hash)
+}
+
+// MakeSDJWTWithVersion sets version for SD-JWT VC.
+func MakeSDJWTWithVersion(version common.SDJWTVersion) MakeSDJWTOption {
+	return verifiable.MakeSDJWTWithVersion(version)
+}
+
+// MakeSDJWTWithRecursiveClaimsObjects sets version for SD-JWT VC. SD-JWT v5+ support.
+func MakeSDJWTWithRecursiveClaimsObjects(recursiveClaimsObject []string) MakeSDJWTOption {
+	return verifiable.MakeSDJWTWithRecursiveClaimsObjects(recursiveClaimsObject)
+}
+
+// MakeSDJWTWithAlwaysIncludeObjects is an option for provide object keys that should be a part of
+// selectively disclosable claims.
+func MakeSDJWTWithAlwaysIncludeObjects(alwaysIncludeObjects []string) MakeSDJWTOption {
+	return verifiable.MakeSDJWTWithAlwaysIncludeObjects(alwaysIncludeObjects)
+}
+
+// MakeSDJWTWithNonSelectivelyDisclosableClaims is an option for provide claim names
+// that should be ignored when creating selectively disclosable claims.
+func MakeSDJWTWithNonSelectivelyDisclosableClaims(nonSDClaims []string) MakeSDJWTOption {
+	return verifiable.MakeSDJWTWithNonSelectivelyDisclosableClaims(nonSDClaims)
 }
 
 // DisplayCredentialOption provides an option for Credential.CreateDisplayCredential.

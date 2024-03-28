@@ -18,9 +18,9 @@ WEBHOOK_IMAGE_NAME ?= sample-webhook
 # Tool commands (overridable)
 DOCKER_CMD ?= docker
 GO_CMD     ?= go
-ALPINE_VER ?= 3.16
+ALPINE_VER ?= 3.18
 GO_TAGS    ?=
-GO_VER ?= 1.19.2
+GO_VER ?= 1.20.5
 PROJECT_ROOT = github.com/hyperledger/aries-framework-go
 GOBIN_PATH=$(abspath .)/build/bin
 MOCKGEN=$(GOBIN_PATH)/mockgen
@@ -33,8 +33,15 @@ all: clean checks unit-test unit-test-wasm unit-test-mobile bdd-test
 checks: license lint generate-openapi-spec
 
 .PHONY: lint
-lint:
+lint: lint-core lint-components
+
+.PHONY: lint-core
+lint-core:
 	@scripts/check_lint.sh
+
+.PHONY: lint-components
+lint-components:
+	@scripts/check_lint_components.sh
 
 .PHONY: license
 license:
@@ -190,7 +197,7 @@ endef
 depend:
 	@mkdir -p ./build/bin
 	GOBIN=$(GOBIN_PATH) go install github.com/golang/mock/mockgen@v1.5.0
-	GOBIN=$(GOBIN_PATH) go install github.com/agnivade/wasmbrowsertest@v0.3.5
+	GOBIN=$(GOBIN_PATH) go install github.com/agnivade/wasmbrowsertest@v0.7.0
 
 .PHONY: mocks
 mocks: depend clean-mocks
@@ -248,3 +255,10 @@ clean-fixtures:
 	@cd test/bdd/fixtures/sidetree-mock && docker-compose down 2> /dev/null
 	@cd test/bdd/fixtures/agent-rest && docker-compose down 2> /dev/null
 
+.PHONY: tidy-modules
+tidy-modules:
+	@find . -type d \( -name build -prune \) -o -name go.mod -print | while read -r gomod_path; do \
+		dir_path=$$(dirname "$$gomod_path"); \
+		echo "Executing 'go mod tidy' in directory: $$dir_path"; \
+		(cd "$$dir_path" && go mod tidy) || exit 1; \
+	done

@@ -4,19 +4,19 @@
 
 module github.com/hyperledger/aries-framework-go/component/storage/indexeddb
 
-go 1.19
+go 1.20
 
 require (
 	github.com/google/uuid v1.3.0
 	github.com/hyperledger/aries-framework-go v0.1.9-0.20221025204933-b807371b6f1e
 	github.com/hyperledger/aries-framework-go/spi v0.0.0-20221021224215-368f53b380a4
-	github.com/hyperledger/aries-framework-go/test/component v0.0.0-20220322085443-50e8f9bd208b
+	github.com/hyperledger/aries-framework-go/test/component v0.0.0-20220428211718-66cc046674a1
 	github.com/stretchr/testify v1.8.1
 )
 
 require (
 	github.com/VictoriaMetrics/fastcache v1.5.7 // indirect
-	github.com/btcsuite/btcd v0.22.0-beta // indirect
+	github.com/btcsuite/btcd v0.22.3 // indirect
 	github.com/btcsuite/btcutil v1.0.3-0.20201208143702-a53e38424cce // indirect
 	github.com/cenkalti/backoff/v4 v4.0.2 // indirect
 	github.com/cespare/xxhash/v2 v2.1.1 // indirect
@@ -36,7 +36,7 @@ require (
 	github.com/multiformats/go-multibase v0.1.1 // indirect
 	github.com/multiformats/go-multihash v0.0.13 // indirect
 	github.com/multiformats/go-varint v0.0.5 // indirect
-	github.com/piprate/json-gold v0.4.2 // indirect
+	github.com/piprate/json-gold v0.5.1-0.20230111113000-6ddbe6e6f19f // indirect
 	github.com/pkg/errors v0.9.1 // indirect
 	github.com/pmezard/go-difflib v1.0.0 // indirect
 	github.com/pquerna/cachecontrol v0.1.0 // indirect
